@@ -13,42 +13,30 @@ const Index = () => {
     setLoading(true);
     setResult(null);
 
-    // Simulate API call (replace with real backend)
-    await new Promise((r) => setTimeout(r, 2500));
+    try {
+      const response = await fetch("https://chetanchauhan.com/api/v1/solve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: data.title,
+          difficulty: data.difficulty,
+          language: data.language,
+          problem: data.problem,
+        }),
+      });
 
-    setResult({
-      success: true,
-      title: data.title,
-      language: data.language,
-      difficulty: data.difficulty,
-      solution: `// ${data.title} - ${data.difficulty}
-// Language: ${data.language}
-
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-function twoSum(nums, target) {
-    const map = new Map();
-    
-    for (let i = 0; i < nums.length; i++) {
-        const complement = target - nums[i];
-        
-        if (map.has(complement)) {
-            return [map.get(complement), i];
-        }
-        
-        map.set(nums[i], i);
+      const result = await response.json();
+      setResult(result);
+    } catch (error) {
+      setResult({
+        success: false,
+        title: data.title,
+        language: data.language,
+        difficulty: data.difficulty,
+        solution: "",
+        message: "Failed to connect to the server. Please try again.",
+      });
     }
-    
-    return [];
-}
-
-// Time Complexity: O(n)
-// Space Complexity: O(n)`,
-      message: "Solution generated and pushed to GitHub",
-    });
 
     setLoading(false);
   };
