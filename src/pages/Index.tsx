@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Braces, Zap } from "lucide-react";
+import { Braces, Github, Zap } from "lucide-react";
 import SolveForm, { type FormData } from "@/components/SolveForm";
 import ResultViewer, { type ResultData } from "@/components/ResultViewer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Index = () => {
   const [result, setResult] = useState<ResultData | null>(null);
@@ -62,13 +63,25 @@ function twoSum(nums, target) {
           </div>
           <div>
             <h1 className="text-base font-bold text-foreground tracking-tight">
-              LeetCode <span className="text-gradient">Archiver</span>
+              DSA <span className="text-gradient">Solver</span>
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Zap className="w-3.5 h-3.5 text-primary" />
-          <span>AI-Powered</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Zap className="w-3.5 h-3.5 text-primary" />
+            <span>AI-Powered</span>
+          </div>
+          <a
+            href="https://github.com/chetan1930"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg bg-surface border border-border text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-all"
+            aria-label="GitHub"
+          >
+            <Github className="w-4 h-4" />
+          </a>
+          <ThemeToggle />
         </div>
       </header>
 
