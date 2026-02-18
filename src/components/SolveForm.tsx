@@ -144,7 +144,7 @@ export default function SolveForm({ onSubmit, loading }: SolveFormProps) {
           ) : (
             <>
               <Send className="w-4 h-4" />
-              Generate & Push to GitHub
+              Generate
             </>
           )}
         </motion.button>
