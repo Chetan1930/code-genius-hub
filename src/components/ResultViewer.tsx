@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Copy, FileCode2, GitBranch } from "lucide-react";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 interface ResultViewerProps {
   result: ResultData | null;
@@ -9,7 +10,7 @@ interface ResultViewerProps {
 
 export interface ResultData {
   success: boolean;
-  solution?: string;
+  response?: string;
   message?: string;
   title?: string;
   language?: string;
@@ -20,8 +21,8 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    if (result?.solution) {
-      navigator.clipboard.writeText(result.solution);
+    if (result?.response) {
+      navigator.clipboard.writeText(result.response);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -45,7 +46,7 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
             <p className="text-sm text-muted-foreground">AI-generated solution</p>
           </div>
         </div>
-        {result?.solution && (
+        {result?.response && (
           <button
             onClick={handleCopy}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-surface border border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-all"
@@ -97,24 +98,24 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
                   <p className="text-xs text-muted-foreground mt-1">AI is analyzing the problem</p>
                 </div>
               </motion.div>
-            ) : result?.solution ? (
+            ) : result?.response ? (
               <motion.div
                 key="result"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
               >
-                {result.success && (
+                {result.success && result.message && (
                   <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
                     <GitBranch className="w-4 h-4 text-primary" />
                     <span className="text-xs font-medium text-primary">
-                      Successfully pushed to GitHub
+                      {result.message}
                     </span>
                   </div>
                 )}
-                <pre className="text-sm font-mono text-foreground/90 whitespace-pre-wrap leading-relaxed">
-                  {result.solution}
-                </pre>
+                <div className="prose prose-sm prose-invert max-w-none text-foreground/90 [&_pre]:bg-surface [&_pre]:border [&_pre]:border-border [&_pre]:rounded-lg [&_pre]:p-3 [&_code]:text-primary [&_h2]:text-foreground [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_p]:text-muted-foreground [&_p]:leading-relaxed">
+                  <ReactMarkdown>{result.response}</ReactMarkdown>
+                </div>
               </motion.div>
             ) : (
               <motion.div
