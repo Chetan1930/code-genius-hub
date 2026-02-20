@@ -33,7 +33,7 @@ const Index = () => {
         title: data.title,
         language: data.language,
         difficulty: data.difficulty,
-        solution: "",
+        response: "",
         message: "Failed to connect to the server. Please try again.",
       });
     }
