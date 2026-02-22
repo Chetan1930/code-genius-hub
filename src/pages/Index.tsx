@@ -14,7 +14,7 @@ const Index = () => {
     setResult(null);
 
     try {
-      const response = await fetch("https://chetanchauhan.fun/api/v1/solve", {
+      const response = await fetch("https://api.chetanchauhan.fun/api/v1/solve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
