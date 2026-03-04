@@ -74,10 +74,10 @@ const Index = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col lg:flex-row">
+      <main className="flex-1 flex flex-col lg:flex-row min-h-0">
         {/* Left panel - Form */}
         <motion.section
-          className="lg:w-[45%] xl:w-[40%] p-6 border-r border-border overflow-auto"
+          className="lg:w-[45%] xl:w-[40%] p-6 border-r border-border overflow-auto lg:h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -87,7 +87,7 @@ const Index = () => {
 
         {/* Right panel - Result */}
         <motion.section
-          className="flex-1 p-6 overflow-auto"
+          className="flex-1 p-6 overflow-auto lg:h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
