@@ -2,9 +2,9 @@
 
 AI-powered DSA problem solver and GitHub archiver.
 
-**Live**: [https://dsasolver.lovable.app](https://dsasolver.lovable.app)
+**Live**: [DSA Solver](https://chetanchauhan.fun)
 
-**GitHub**: [https://github.com/chetan1930](https://github.com/chetan1930)
+**GitHub**: [https://github.com/chetan1930](https://github.com/Chetan1930/code-genius-hub)
 
 ## Tech Stack
 
