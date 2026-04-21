@@ -138,7 +138,7 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2.5 rounded-xl bg-primary/10 glow-primary">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20 glow-primary">
             {currentMode === "complexity" ? (
               <Binary className="w-5 h-5 text-primary" />
             ) : (
@@ -146,6 +146,7 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
             )}
           </div>
           <div className="min-w-0">
+            <p className="section-badge mb-2">{currentMode === "complexity" ? "Analysis Result" : "Generated Output"}</p>
             <h2 className="text-base sm:text-lg font-semibold text-foreground">
               {currentMode === "complexity" ? "Complexity Output" : "Solution Output"}
             </h2>
@@ -156,8 +157,8 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         </div>
       </div>
 
-      <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-xl bg-[hsl(var(--code-bg))] border border-border overflow-hidden flex flex-col">
-        <div className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[hsl(var(--surface)/0.5)] border-b border-border">
+      <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border border-border/90 overflow-hidden flex flex-col shadow-2xl shadow-black/10">
+        <div className="flex items-center gap-1 px-3 sm:px-4 py-3 bg-[hsl(var(--surface)/0.65)] border-b border-border">
           <div className="w-3 h-3 rounded-full bg-destructive/60" />
           <div className="w-3 h-3 rounded-full bg-[hsl(var(--difficulty-medium)/0.6)]" />
           <div className="w-3 h-3 rounded-full bg-primary/60" />
