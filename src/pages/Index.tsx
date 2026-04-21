@@ -1,33 +1,27 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Braces, Github, Zap } from "lucide-react";
-import SolveForm, { type FormData } from "@/components/SolveForm";
+import { Binary, Braces, Github, Zap } from "lucide-react";
+import ComplexityForm, { type ComplexityFormData } from "@/components/ComplexityForm";
 import ResultViewer, { type ResultData } from "@/components/ResultViewer";
+import SolveForm, { type FormData } from "@/components/SolveForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import { submitComplexity, submitProblem } from "@/lib/api";
+
+type FeatureMode = "solver" | "complexity";
 
 const Index = () => {
   const [result, setResult] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<FeatureMode>("solver");
 
-  const handleSubmit = async (data: FormData) => {
+  const handleSolveSubmit = async (data: FormData) => {
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await fetch("https://api.chetanchauhan.fun/api/v1/solve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: data.title,
-          difficulty: data.difficulty,
-          language: data.language,
-          problem: data.problem,
-        }),
-      });
-
-      const result = await response.json();
-      setResult(result);
-    } catch (error) {
+      const nextResult = await submitProblem(data);
+      setResult(nextResult);
+    } catch {
       setResult({
         success: false,
         title: data.title,
@@ -35,6 +29,27 @@ const Index = () => {
         difficulty: data.difficulty,
         response: "",
         message: "Failed to connect to the server. Please try again.",
+        mode: "solver",
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const handleComplexitySubmit = async (data: ComplexityFormData) => {
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const nextResult = await submitComplexity(data);
+      setResult(nextResult);
+    } catch {
+      setResult({
+        success: false,
+        language: data.language,
+        response: "",
+        message: "Failed to connect to the complexity server. Please make sure localhost:8080 is running.",
+        mode: "complexity",
       });
     }
 
@@ -43,7 +58,6 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
-      {/* Top bar */}
       <header className="border-b border-border px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-1.5 rounded-lg bg-primary/10">
@@ -73,26 +87,60 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="flex-1 flex flex-col lg:flex-row min-h-0">
-        {/* Left panel - Form */}
         <motion.section
           className="lg:w-[45%] xl:w-[40%] p-6 border-r border-border overflow-auto lg:h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <SolveForm onSubmit={handleSubmit} loading={loading} />
+          <div className="flex items-center gap-2 mb-6 p-1 rounded-xl border border-border bg-surface/60">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("solver");
+                setResult(null);
+              }}
+              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+                mode === "solver"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-surface-hover"
+              }`}
+            >
+              <Braces className="w-4 h-4 inline mr-2" />
+              Problem Solver
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("complexity");
+                setResult(null);
+              }}
+              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+                mode === "complexity"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-surface-hover"
+              }`}
+            >
+              <Binary className="w-4 h-4 inline mr-2" />
+              Complexity Analyzer
+            </button>
+          </div>
+
+          {mode === "solver" ? (
+            <SolveForm onSubmit={handleSolveSubmit} loading={loading} />
+          ) : (
+            <ComplexityForm onSubmit={handleComplexitySubmit} loading={loading} />
+          )}
         </motion.section>
 
-        {/* Right panel - Result */}
         <motion.section
           className="flex-1 p-6 overflow-auto lg:h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <ResultViewer result={result} loading={loading} />
+          <ResultViewer result={result} loading={loading} mode={mode} />
         </motion.section>
       </main>
     </div>

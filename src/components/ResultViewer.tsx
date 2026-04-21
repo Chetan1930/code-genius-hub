@@ -1,11 +1,12 @@
+import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Binary, CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface ResultViewerProps {
   result: ResultData | null;
   loading: boolean;
+  mode?: "solver" | "complexity";
 }
 
 export interface ResultData {
@@ -15,6 +16,8 @@ export interface ResultData {
   title?: string;
   language?: string;
   difficulty?: string;
+  mode?: "solver" | "complexity";
+  [key: string]: unknown;
 }
 
 function CodeBlock({ children, className }: { children: string; className?: string }) {
@@ -29,7 +32,6 @@ function CodeBlock({ children, className }: { children: string; className?: stri
 
   return (
     <div className="group relative my-3 rounded-xl overflow-hidden border border-border bg-[hsl(var(--code-bg))]">
-      {/* Code header */}
       <div className="flex items-center justify-between px-4 py-2 bg-[hsl(var(--surface)/0.6)] border-b border-border">
         <div className="flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-primary/70" />
@@ -69,7 +71,6 @@ function CodeBlock({ children, className }: { children: string; className?: stri
           </AnimatePresence>
         </motion.button>
       </div>
-      {/* Code content */}
       <pre className="p-4 overflow-x-auto text-sm leading-relaxed">
         <code className="font-mono text-foreground/90">{children}</code>
       </pre>
@@ -77,7 +78,57 @@ function CodeBlock({ children, className }: { children: string; className?: stri
   );
 }
 
-export default function ResultViewer({ result, loading }: ResultViewerProps) {
+function getExtension(language?: string) {
+  const normalized = language?.toLowerCase();
+
+  switch (normalized) {
+    case "python":
+      return "py";
+    case "cpp":
+    case "c++":
+      return "cpp";
+    case "java":
+      return "java";
+    case "go":
+      return "go";
+    case "rust":
+      return "rs";
+    case "javascript":
+      return "js";
+    case "typescript":
+      return "ts";
+    default:
+      return "txt";
+  }
+}
+
+function getDisplayResponse(result: ResultData | null) {
+  if (!result) {
+    return "";
+  }
+
+  if (typeof result.response === "string" && result.response.trim().length > 0) {
+    return result.response;
+  }
+
+  const { response, ...rest } = result;
+  const printable = Object.fromEntries(
+    Object.entries(rest).filter(([, value]) => value !== undefined && value !== ""),
+  );
+
+  return Object.keys(printable).length > 0 ? JSON.stringify(printable, null, 2) : "";
+}
+
+export default function ResultViewer({ result, loading, mode = "solver" }: ResultViewerProps) {
+  const currentMode = result?.mode ?? mode;
+  const displayResponse = getDisplayResponse(result);
+  const fileLabel =
+    currentMode === "complexity"
+      ? `complexity-report.${getExtension(result?.language)}`
+      : result?.title
+        ? `${result.title}.${getExtension(result.language)}`
+        : null;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -85,29 +136,34 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
       transition={{ duration: 0.5, delay: 0.1 }}
       className="flex flex-col h-full"
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-primary/10 glow-primary">
-            <FileCode2 className="w-5 h-5 text-primary" />
+            {currentMode === "complexity" ? (
+              <Binary className="w-5 h-5 text-primary" />
+            ) : (
+              <FileCode2 className="w-5 h-5 text-primary" />
+            )}
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Solution Output</h2>
-            <p className="text-sm text-muted-foreground">AI-generated solution</p>
+            <h2 className="text-lg font-semibold text-foreground">
+              {currentMode === "complexity" ? "Complexity Output" : "Solution Output"}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {currentMode === "complexity" ? "Backend complexity analysis" : "AI-generated solution"}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 rounded-xl bg-[hsl(var(--code-bg))] border border-border overflow-hidden flex flex-col">
-        {/* Tab bar */}
         <div className="flex items-center gap-1 px-4 py-2 bg-[hsl(var(--surface)/0.5)] border-b border-border">
           <div className="w-3 h-3 rounded-full bg-destructive/60" />
           <div className="w-3 h-3 rounded-full bg-[hsl(var(--difficulty-medium)/0.6)]" />
           <div className="w-3 h-3 rounded-full bg-primary/60" />
-          {result?.title && (
+          {fileLabel && (
             <span className="ml-3 text-xs text-muted-foreground font-mono">
-              {result.title}.{result.language === "Python" ? "py" : result.language === "C++" ? "cpp" : result.language === "Java" ? "java" : result.language === "Go" ? "go" : result.language === "Rust" ? "rs" : "ts"}
+              {fileLabel}
             </span>
           )}
         </div>
@@ -127,54 +183,73 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
                   <Sparkles className="w-5 h-5 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Generating solution...</p>
-                  <p className="text-xs text-muted-foreground mt-1">AI is analyzing the problem</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {currentMode === "complexity" ? "Analyzing complexity..." : "Generating solution..."}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {currentMode === "complexity"
+                      ? "The backend is evaluating the submitted code"
+                      : "AI is analyzing the problem"}
+                  </p>
                 </div>
               </motion.div>
-            ) : result?.response ? (
+            ) : displayResponse ? (
               <motion.div
                 key="result"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
               >
-                {result.success && result.message && (
+                {result?.message && (
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20"
+                    className={`flex items-center gap-2 mb-4 px-3 py-2 rounded-lg border ${
+                      result.success
+                        ? "bg-primary/10 border-primary/20"
+                        : "bg-destructive/10 border-destructive/20"
+                    }`}
                   >
-                    <GitBranch className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-medium text-primary">
+                    <GitBranch className={`w-4 h-4 ${result.success ? "text-primary" : "text-destructive"}`} />
+                    <span className={`text-xs font-medium ${result.success ? "text-primary" : "text-destructive"}`}>
                       {result.message}
                     </span>
                   </motion.div>
                 )}
+
                 <div className="prose prose-sm prose-invert max-w-none text-foreground/90 [&>h2]:text-foreground [&>h2]:text-base [&>h2]:font-semibold [&>h2]:mt-5 [&>h2]:mb-2 [&>h2]:flex [&>h2]:items-center [&>h2]:gap-2 [&>p]:text-muted-foreground [&>p]:leading-relaxed [&>ul]:text-muted-foreground [&>ol]:text-muted-foreground">
-                  <ReactMarkdown
-                    components={{
-                      code({ className, children, ...props }) {
-                        const isBlock = className?.startsWith("language-");
-                        if (isBlock) {
+                  {displayResponse.trim().startsWith("{") || displayResponse.trim().startsWith("[") ? (
+                    <CodeBlock className="language-json">{displayResponse}</CodeBlock>
+                  ) : (
+                    <ReactMarkdown
+                      components={{
+                        code({ className, children, ...props }) {
+                          const isBlock = className?.startsWith("language-");
+                          if (isBlock) {
+                            return (
+                              <CodeBlock className={className}>
+                                {String(children).replace(/\n$/, "")}
+                              </CodeBlock>
+                            );
+                          }
+
                           return (
-                            <CodeBlock className={className}>
-                              {String(children).replace(/\n$/, "")}
-                            </CodeBlock>
+                            <code
+                              className="px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-mono"
+                              {...props}
+                            >
+                              {children}
+                            </code>
                           );
-                        }
-                        return (
-                          <code className="px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-mono" {...props}>
-                            {children}
-                          </code>
-                        );
-                      },
-                      pre({ children }) {
-                        return <>{children}</>;
-                      },
-                    }}
-                  >
-                    {result.response}
-                  </ReactMarkdown>
+                        },
+                        pre({ children }) {
+                          return <>{children}</>;
+                        },
+                      }}
+                    >
+                      {displayResponse}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </motion.div>
             ) : (
@@ -186,12 +261,20 @@ export default function ResultViewer({ result, loading }: ResultViewerProps) {
                 className="flex flex-col items-center justify-center h-full gap-3 text-center"
               >
                 <div className="p-4 rounded-2xl bg-[hsl(var(--surface)/0.5)]">
-                  <FileCode2 className="w-10 h-10 text-muted-foreground/30" />
+                  {currentMode === "complexity" ? (
+                    <Binary className="w-10 h-10 text-muted-foreground/30" />
+                  ) : (
+                    <FileCode2 className="w-10 h-10 text-muted-foreground/30" />
+                  )}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">No solution yet</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {currentMode === "complexity" ? "No analysis yet" : "No solution yet"}
+                  </p>
                   <p className="text-xs text-muted-foreground/60 mt-1">
-                    Submit a problem to generate a solution
+                    {currentMode === "complexity"
+                      ? "Submit code to inspect its time and space complexity"
+                      : "Submit a problem to generate a solution"}
                   </p>
                 </div>
               </motion.div>
