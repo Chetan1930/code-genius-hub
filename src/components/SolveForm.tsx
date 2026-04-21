@@ -45,8 +45,8 @@ export default function SolveForm({ onSubmit, loading }: SolveFormProps) {
         <div className="p-2.5 rounded-xl bg-primary/10 glow-primary">
           <Terminal className="w-5 h-5 text-primary" />
         </div>
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Problem Input</h2>
+        <div className="min-w-0">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">Problem Input</h2>
           <p className="text-sm text-muted-foreground">Paste your LeetCode problem</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function SolveForm({ onSubmit, loading }: SolveFormProps) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Difficulty
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {(["Easy", "Medium", "Hard"] as const).map((d) => (
               <button
                 key={d}
@@ -124,7 +124,7 @@ export default function SolveForm({ onSubmit, loading }: SolveFormProps) {
             onChange={(e) => setProblem(e.target.value)}
             placeholder="Paste the full problem description here..."
             required
-            className="flex-1 min-h-[180px] w-full px-4 py-3 rounded-lg bg-surface border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all font-mono text-sm resize-none"
+            className="flex-1 min-h-[180px] sm:min-h-[220px] w-full px-4 py-3 rounded-lg bg-surface border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all font-mono text-sm resize-none"
           />
         </div>
 

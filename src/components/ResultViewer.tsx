@@ -137,7 +137,7 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
       className="flex flex-col h-full"
     >
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="p-2.5 rounded-xl bg-primary/10 glow-primary">
             {currentMode === "complexity" ? (
               <Binary className="w-5 h-5 text-primary" />
@@ -145,8 +145,8 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
               <FileCode2 className="w-5 h-5 text-primary" />
             )}
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">
               {currentMode === "complexity" ? "Complexity Output" : "Solution Output"}
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -156,19 +156,19 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         </div>
       </div>
 
-      <div className="flex-1 rounded-xl bg-[hsl(var(--code-bg))] border border-border overflow-hidden flex flex-col">
-        <div className="flex items-center gap-1 px-4 py-2 bg-[hsl(var(--surface)/0.5)] border-b border-border">
+      <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-xl bg-[hsl(var(--code-bg))] border border-border overflow-hidden flex flex-col">
+        <div className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[hsl(var(--surface)/0.5)] border-b border-border">
           <div className="w-3 h-3 rounded-full bg-destructive/60" />
           <div className="w-3 h-3 rounded-full bg-[hsl(var(--difficulty-medium)/0.6)]" />
           <div className="w-3 h-3 rounded-full bg-primary/60" />
           {fileLabel && (
-            <span className="ml-3 text-xs text-muted-foreground font-mono">
+            <span className="ml-3 text-xs text-muted-foreground font-mono truncate">
               {fileLabel}
             </span>
           )}
         </div>
 
-        <div className="flex-1 p-4 overflow-auto">
+        <div className="flex-1 p-3 sm:p-4 overflow-auto">
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div

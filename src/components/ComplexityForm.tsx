@@ -45,8 +45,8 @@ export default function ComplexityForm({ onSubmit, loading }: ComplexityFormProp
         <div className="p-2.5 rounded-xl bg-primary/10 glow-primary">
           <Binary className="w-5 h-5 text-primary" />
         </div>
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Complexity Analyzer</h2>
+        <div className="min-w-0">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">Complexity Analyzer</h2>
           <p className="text-sm text-muted-foreground">
             Choose a language and paste your code snippet
           </p>
@@ -93,7 +93,7 @@ public:
     }
 };`}
             required
-            className="flex-1 min-h-[260px] w-full px-4 py-3 rounded-lg bg-surface border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all font-mono text-sm resize-none"
+            className="flex-1 min-h-[240px] sm:min-h-[320px] w-full px-4 py-3 rounded-lg bg-surface border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all font-mono text-sm resize-none"
           />
           <p className="text-xs text-muted-foreground/70">
             Multiline code is sent with normalized <code>\n</code> line breaks in the JSON payload.
@@ -120,7 +120,7 @@ public:
           )}
         </motion.button>
 
-        <div className="rounded-lg border border-border bg-surface/50 px-4 py-3 text-xs text-muted-foreground">
+        <div className="rounded-lg border border-border bg-surface/50 px-4 py-3 text-xs text-muted-foreground break-all">
           <div className="flex items-center gap-2 font-medium text-foreground mb-1">
             <Terminal className="w-3.5 h-3.5 text-primary" />
             API target

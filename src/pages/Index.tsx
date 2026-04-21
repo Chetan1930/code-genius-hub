@@ -57,20 +57,20 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <header className="border-b border-border px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b border-border px-4 py-3 sm:px-6 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="p-1.5 rounded-lg bg-primary/10">
             <Braces className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h1 className="text-base font-bold text-foreground tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
               DSA <span className="text-gradient">Solver</span>
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
             <Zap className="w-3.5 h-3.5 text-primary" />
             <span>AI-Powered</span>
           </div>
@@ -87,21 +87,21 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col lg:flex-row min-h-0">
+      <main className="flex-1 flex flex-col lg:flex-row">
         <motion.section
-          className="lg:w-[45%] xl:w-[40%] p-6 border-r border-border overflow-auto lg:h-full"
+          className="lg:w-[45%] xl:w-[40%] p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border overflow-visible lg:overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex items-center gap-2 mb-6 p-1 rounded-xl border border-border bg-surface/60">
+          <div className="grid grid-cols-1 sm:grid-cols-2 items-stretch gap-2 mb-6 p-1 rounded-xl border border-border bg-surface/60">
             <button
               type="button"
               onClick={() => {
                 setMode("solver");
                 setResult(null);
               }}
-              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+              className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
                 mode === "solver"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-surface-hover"
@@ -116,7 +116,7 @@ const Index = () => {
                 setMode("complexity");
                 setResult(null);
               }}
-              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+              className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
                 mode === "complexity"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-surface-hover"
@@ -135,7 +135,7 @@ const Index = () => {
         </motion.section>
 
         <motion.section
-          className="flex-1 p-6 overflow-auto lg:h-full"
+          className="flex-1 p-4 sm:p-6 overflow-visible lg:overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
