@@ -2,8 +2,10 @@ import type { ComplexityFormData } from "@/components/ComplexityForm";
 import type { ResultData } from "@/components/ResultViewer";
 import type { FormData } from "@/components/SolveForm";
 
-const SOLVER_ENDPOINT = "https://api.chetanchauhan.fun/api/v1/solve";
-const COMPLEXITY_ENDPOINT = "http://localhost:8080/api/v1/solve/complexity";
+const API_ORIGIN = "https://api.chetanchauhan.fun";
+
+const SOLVER_ENDPOINT = `${API_ORIGIN}/api/v1/solve`;
+export const COMPLEXITY_ENDPOINT = `${API_ORIGIN}/api/v1/solve/complexity`;
 
 async function parseApiResponse(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
@@ -56,7 +58,6 @@ export async function submitComplexity(data: ComplexityFormData): Promise<Result
   const response = await fetch(COMPLEXITY_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify({
       language: data.language,
       code: normalizedCode,

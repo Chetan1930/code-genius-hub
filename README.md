@@ -2,7 +2,7 @@
 
 AI-powered DSA problem solver and GitHub archiver.
 
-**Live**: [DSA Solver](https://chetanchauhan.fun)
+**Live**: [DSA Solver](https://solve.chetanchauhan.fun)
 
 **GitHub**: [https://github.com/chetan1930](https://github.com/Chetan1930/code-genius-hub)
 

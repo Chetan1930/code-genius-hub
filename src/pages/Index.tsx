@@ -48,7 +48,7 @@ const Index = () => {
         success: false,
         language: data.language,
         response: "",
-        message: "Failed to connect to the complexity server. Please make sure localhost:8080 is running.",
+        message: "Failed to connect to the complexity server. Please try again.",
         mode: "complexity",
       });
     }

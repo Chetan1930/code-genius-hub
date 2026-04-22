@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { COMPLEXITY_ENDPOINT } from "@/lib/api";
 import { Binary, Code2, Loader2, Send, Terminal } from "lucide-react";
 
 interface ComplexityFormProps {
@@ -126,7 +127,7 @@ public:
             <Terminal className="w-3.5 h-3.5 text-primary" />
             API target
           </div>
-          <code>POST http://localhost:8080/api/v1/solve/complexity</code>
+          <code>POST {COMPLEXITY_ENDPOINT}</code>
         </div>
       </form>
     </motion.div>
