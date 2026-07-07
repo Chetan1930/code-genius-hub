@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowUpRight, Binary, Braces, Github, Menu, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowUpRight, Binary, Braces, Github, Menu, Sparkles } from "lucide-react";
 import ComplexityForm, { type ComplexityFormData } from "@/components/ComplexityForm";
 import ResultViewer, { type ResultData } from "@/components/ResultViewer";
 import SolveForm, { type FormData } from "@/components/SolveForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import WelcomeScreen from "@/components/WelcomeScreen";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { celebrateSuccess } from "@/lib/celebrate";
 import { submitComplexity, submitProblem } from "@/lib/api";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 type FeatureMode = "solver" | "complexity";
 
@@ -16,7 +18,7 @@ const shellPadding = "px-4 sm:px-6 lg:px-10 xl:px-12";
 const Index = () => {
   const [result, setResult] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<FeatureMode>("solver");
+  const [mode, setMode] = usePersistentState<FeatureMode | null>("dsa.mode", null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSolveSubmit = async (data: FormData) => {
