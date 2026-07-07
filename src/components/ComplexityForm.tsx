@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { COMPLEXITY_ENDPOINT } from "@/lib/api";
 import { Binary, Code2, Loader2, Send, Terminal } from "lucide-react";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 interface ComplexityFormProps {
   onSubmit: (data: ComplexityFormData) => void;
@@ -24,8 +24,8 @@ const languages = [
 ];
 
 export default function ComplexityForm({ onSubmit, loading }: ComplexityFormProps) {
-  const [language, setLanguage] = useState("cpp");
-  const [code, setCode] = useState("");
+  const [language, setLanguage] = usePersistentState<string>("dsa.complexity.language", "cpp");
+  const [code, setCode] = usePersistentState<string>("dsa.complexity.code", "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
