@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowUpRight, Binary, Braces, Github, Menu, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowUpRight, Binary, Braces, Github, Menu, Sparkles } from "lucide-react";
 import ComplexityForm, { type ComplexityFormData } from "@/components/ComplexityForm";
 import ResultViewer, { type ResultData } from "@/components/ResultViewer";
 import SolveForm, { type FormData } from "@/components/SolveForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import WelcomeScreen from "@/components/WelcomeScreen";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { celebrateSuccess } from "@/lib/celebrate";
 import { submitComplexity, submitProblem } from "@/lib/api";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 type FeatureMode = "solver" | "complexity";
 
@@ -16,7 +18,7 @@ const shellPadding = "px-4 sm:px-6 lg:px-10 xl:px-12";
 const Index = () => {
   const [result, setResult] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<FeatureMode>("solver");
+  const [mode, setMode] = usePersistentState<FeatureMode | null>("dsa.mode", null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSolveSubmit = async (data: FormData) => {
@@ -198,67 +200,95 @@ const Index = () => {
         </div>
       </header>
 
-      <main
-        className={`mx-auto flex w-full max-w-[1920px] flex-1 flex-col gap-6 pb-8 pt-5 sm:gap-7 sm:pb-10 sm:pt-6 lg:flex-row lg:items-stretch lg:gap-8 xl:gap-10 ${shellPadding}`}
-      >
-        <motion.section
-          className="panel-shell w-full min-w-0 rounded-3xl p-4 sm:p-6 lg:max-w-xl lg:flex-[0_1_42%] xl:flex-[0_1_38%]"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          <div className="mb-6">
-            <p className="section-badge mb-3">Choose Feature</p>
-            <div className="grid grid-cols-1 items-stretch gap-2 rounded-2xl border border-border/80 bg-background/30 p-1.5 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("solver");
-                  setResult(null);
-                }}
-                className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                  mode === "solver"
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                    : "text-muted-foreground hover:bg-surface-hover/80"
-                }`}
-              >
-                <Braces className="mr-2 inline h-4 w-4" />
-                Problem Solver
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("complexity");
-                  setResult(null);
-                }}
-                className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                  mode === "complexity"
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                    : "text-muted-foreground hover:bg-surface-hover/80"
-                }`}
-              >
-                <Binary className="mr-2 inline h-4 w-4" />
-                Complexity Analyzer
-              </button>
-            </div>
-          </div>
+      <AnimatePresence mode="wait">
+        {mode === null ? (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="flex flex-1 flex-col"
+          >
+            <WelcomeScreen
+              onSelect={(next) => {
+                setMode(next);
+                setResult(null);
+              }}
+            />
+          </motion.div>
+        ) : (
+          <motion.main
+            key="workspace"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`mx-auto flex w-full max-w-[1920px] flex-1 flex-col gap-6 pb-8 pt-5 sm:gap-7 sm:pb-10 sm:pt-6 lg:flex-row lg:items-stretch lg:gap-8 xl:gap-10 ${shellPadding}`}
+          >
+            <section className="panel-shell w-full min-w-0 rounded-3xl p-4 sm:p-6 lg:max-w-xl lg:flex-[0_1_42%] xl:flex-[0_1_38%]">
+              <div className="mb-6 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="section-badge">Active Tool</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode(null);
+                      setResult(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-background/50 px-3 py-1 text-[11px] font-medium text-muted-foreground transition-all hover:bg-surface-hover hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-3 w-3" />
+                    Change tool
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 items-stretch gap-2 rounded-2xl border border-border/80 bg-background/30 p-1.5 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("solver");
+                      setResult(null);
+                    }}
+                    className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                      mode === "solver"
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                        : "text-muted-foreground hover:bg-surface-hover/80"
+                    }`}
+                  >
+                    <Braces className="mr-2 inline h-4 w-4" />
+                    Problem Solver
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("complexity");
+                      setResult(null);
+                    }}
+                    className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                      mode === "complexity"
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                        : "text-muted-foreground hover:bg-surface-hover/80"
+                    }`}
+                  >
+                    <Binary className="mr-2 inline h-4 w-4" />
+                    Complexity Analyzer
+                  </button>
+                </div>
+              </div>
 
-          {mode === "solver" ? (
-            <SolveForm onSubmit={handleSolveSubmit} loading={loading} />
-          ) : (
-            <ComplexityForm onSubmit={handleComplexitySubmit} loading={loading} />
-          )}
-        </motion.section>
+              {mode === "solver" ? (
+                <SolveForm onSubmit={handleSolveSubmit} loading={loading} />
+              ) : (
+                <ComplexityForm onSubmit={handleComplexitySubmit} loading={loading} />
+              )}
+            </section>
 
-        <motion.section
-          className="panel-shell flex min-h-[min(420px,70vh)] w-full min-w-0 flex-1 flex-col rounded-3xl p-4 sm:min-h-[min(480px,72vh)] sm:p-6 lg:min-h-0"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.06 }}
-        >
-          <ResultViewer result={result} loading={loading} mode={mode} />
-        </motion.section>
-      </main>
+            <section className="panel-shell flex min-h-[min(420px,70vh)] w-full min-w-0 flex-1 flex-col rounded-3xl p-4 sm:min-h-[min(480px,72vh)] sm:p-6 lg:min-h-0">
+              <ResultViewer result={result} loading={loading} mode={mode} />
+            </section>
+          </motion.main>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

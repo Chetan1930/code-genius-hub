@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Code2, Loader2, Send, Terminal } from "lucide-react";
+import { usePersistentState } from "@/hooks/usePersistentState";
 
 interface SolveFormProps {
   onSubmit: (data: FormData) => void;
@@ -23,10 +23,13 @@ const difficultyConfig = {
 };
 
 export default function SolveForm({ onSubmit, loading }: SolveFormProps) {
-  const [title, setTitle] = useState("");
-  const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">("Easy");
-  const [language, setLanguage] = useState("JavaScript");
-  const [problem, setProblem] = useState("");
+  const [title, setTitle] = usePersistentState<string>("dsa.solve.title", "");
+  const [difficulty, setDifficulty] = usePersistentState<"Easy" | "Medium" | "Hard">(
+    "dsa.solve.difficulty",
+    "Easy"
+  );
+  const [language, setLanguage] = usePersistentState<string>("dsa.solve.language", "JavaScript");
+  const [problem, setProblem] = usePersistentState<string>("dsa.solve.problem", "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
