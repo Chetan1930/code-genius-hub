@@ -130,26 +130,28 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         : null;
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [freshResult, setFreshResult] = useState(false);
 
-  // Auto-scroll and focus the result panel when a new result arrives.
+  // Auto-scroll to the actual result content and focus the panel when a new result arrives.
   useEffect(() => {
     if (!result || loading) return;
 
-    const el = containerRef.current;
-    if (!el) return;
+    const scrollEl = contentRef.current ?? containerRef.current;
+    const focusEl = containerRef.current;
+    if (!scrollEl || !focusEl) return;
 
     setFreshResult(true);
     const freshTimer = window.setTimeout(() => setFreshResult(false), 1400);
 
     const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const isBelowViewport = el.getBoundingClientRect().top > window.innerHeight - 80;
+    const isBelowViewport = scrollEl.getBoundingClientRect().top > window.innerHeight - 80;
 
     const scrollTimer = window.setTimeout(() => {
       if (isBelowViewport) {
-        el.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+        scrollEl.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
       }
-      el.focus({ preventScroll: true });
+      focusEl.focus({ preventScroll: true });
     }, 120);
 
     return () => {
