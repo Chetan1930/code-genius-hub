@@ -189,6 +189,20 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
             </p>
           </div>
         </div>
+
+        <AnimatePresence>
+          {freshResult && !loading && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 10 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.9, x: 10 }}
+              className="hidden sm:flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary shadow-lg shadow-primary/10"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Ready
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border border-border/90 overflow-hidden flex flex-col shadow-2xl shadow-black/10">
