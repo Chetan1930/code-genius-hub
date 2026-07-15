@@ -205,7 +205,13 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         </AnimatePresence>
       </div>
 
-      <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border border-border/90 overflow-hidden flex flex-col shadow-2xl shadow-black/10">
+      <div
+        className={`flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border overflow-hidden flex flex-col shadow-2xl shadow-black/10 transition-all duration-700 ${
+          freshResult && !loading
+            ? "border-primary/60 ring-2 ring-primary/30 shadow-[0_0_50px_-12px_hsl(var(--primary)/0.35)]"
+            : "border-border/90"
+        }`}
+      >
         <div className="flex items-center gap-1 px-3 sm:px-4 py-3 bg-[hsl(var(--surface)/0.65)] border-b border-border">
           <div className="w-3 h-3 rounded-full bg-destructive/60" />
           <div className="w-3 h-3 rounded-full bg-[hsl(var(--difficulty-medium)/0.6)]" />
