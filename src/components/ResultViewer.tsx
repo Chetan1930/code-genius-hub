@@ -129,12 +129,46 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         ? `${result.title}.${getExtension(result.language)}`
         : null;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [freshResult, setFreshResult] = useState(false);
+
+  // Auto-scroll and focus the result panel when a new result arrives.
+  useEffect(() => {
+    if (!result || loading) return;
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    setFreshResult(true);
+    const freshTimer = window.setTimeout(() => setFreshResult(false), 1400);
+
+    const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const isBelowViewport = el.getBoundingClientRect().top > window.innerHeight - 80;
+
+    const scrollTimer = window.setTimeout(() => {
+      if (isBelowViewport) {
+        el.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+      }
+      el.focus({ preventScroll: true });
+    }, 120);
+
+    return () => {
+      window.clearTimeout(freshTimer);
+      window.clearTimeout(scrollTimer);
+    };
+  }, [result, loading]);
+
   return (
     <motion.div
+      ref={containerRef}
+      tabIndex={-1}
+      role="region"
+      aria-label={currentMode === "complexity" ? "Complexity analysis result" : "Generated solution"}
+      aria-live="polite"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-full scroll-mt-28 outline-none"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3 min-w-0">
