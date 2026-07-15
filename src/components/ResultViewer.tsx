@@ -225,7 +225,7 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
           )}
         </div>
 
-        <div className="flex-1 p-3 sm:p-4 overflow-auto">
+        <div ref={contentRef} className="flex-1 p-3 sm:p-4 overflow-auto scroll-mt-28">
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div
