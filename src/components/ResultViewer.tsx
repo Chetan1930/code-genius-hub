@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Binary, CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal } from "lucide-react";
+import { Binary, CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal, Zap } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface ResultViewerProps {
