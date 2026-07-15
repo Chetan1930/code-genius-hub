@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Binary, CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal } from "lucide-react";
+import { Binary, CheckCircle2, Copy, FileCode2, GitBranch, Sparkles, Terminal, Zap } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface ResultViewerProps {
@@ -129,12 +129,48 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
         ? `${result.title}.${getExtension(result.language)}`
         : null;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [freshResult, setFreshResult] = useState(false);
+
+  // Auto-scroll to the actual result content and focus the panel when a new result arrives.
+  useEffect(() => {
+    if (!result || loading) return;
+
+    const scrollEl = contentRef.current ?? containerRef.current;
+    const focusEl = containerRef.current;
+    if (!scrollEl || !focusEl) return;
+
+    setFreshResult(true);
+    const freshTimer = window.setTimeout(() => setFreshResult(false), 1400);
+
+    const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const isBelowViewport = scrollEl.getBoundingClientRect().top > window.innerHeight - 80;
+
+    const scrollTimer = window.setTimeout(() => {
+      if (isBelowViewport) {
+        scrollEl.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+      }
+      focusEl.focus({ preventScroll: true });
+    }, 120);
+
+    return () => {
+      window.clearTimeout(freshTimer);
+      window.clearTimeout(scrollTimer);
+    };
+  }, [result, loading]);
+
   return (
     <motion.div
+      ref={containerRef}
+      tabIndex={-1}
+      role="region"
+      aria-label={currentMode === "complexity" ? "Complexity analysis result" : "Generated solution"}
+      aria-live="polite"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-full scroll-mt-28 outline-none"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3 min-w-0">
@@ -155,9 +191,29 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
             </p>
           </div>
         </div>
+
+        <AnimatePresence>
+          {freshResult && !loading && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 10 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.9, x: 10 }}
+              className="hidden sm:flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary shadow-lg shadow-primary/10"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Ready
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border border-border/90 overflow-hidden flex flex-col shadow-2xl shadow-black/10">
+      <div
+        className={`flex-1 min-h-[320px] lg:min-h-0 rounded-[1.5rem] bg-[hsl(var(--code-bg))] border overflow-hidden flex flex-col shadow-2xl shadow-black/10 transition-all duration-700 ${
+          freshResult && !loading
+            ? "border-primary/60 ring-2 ring-primary/30 shadow-[0_0_50px_-12px_hsl(var(--primary)/0.35)]"
+            : "border-border/90"
+        }`}
+      >
         <div className="flex items-center gap-1 px-3 sm:px-4 py-3 bg-[hsl(var(--surface)/0.65)] border-b border-border">
           <div className="w-3 h-3 rounded-full bg-destructive/60" />
           <div className="w-3 h-3 rounded-full bg-[hsl(var(--difficulty-medium)/0.6)]" />
@@ -169,7 +225,7 @@ export default function ResultViewer({ result, loading, mode = "solver" }: Resul
           )}
         </div>
 
-        <div className="flex-1 p-3 sm:p-4 overflow-auto">
+        <div ref={contentRef} className="flex-1 p-3 sm:p-4 overflow-auto scroll-mt-28">
           <AnimatePresence mode="wait">
             {loading ? (
               <motion.div
